@@ -23,7 +23,7 @@ Ce projet a également pour vocation de comparer les performances des différent
 ---
 
 ## 📁 Structure du projet
-
+```bash
 ocr_eval_25/
 ├── resources/
 │   ├── parsed-200dpi/       → Données scannées brutes
@@ -41,7 +41,7 @@ ocr_eval_25/
 │       └── preprocessing.py          → Prétraitement des images
 ├── results/                 → Résultats d’évaluation des différents modèles
 └── README.txt               → Ce fichier
-
+```
 ---
 
 ## ⚙️ Fonctionnalités principales
