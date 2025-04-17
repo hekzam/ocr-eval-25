@@ -1,0 +1,43 @@
+=======================================================
+📄 Documentation - evaluate_on_mnist.py
+=======================================================
+
+🎯 Objectif :
+--------------
+Ce script évalue les performances de 4 modèles de classification sur les données MNIST
+(en version image + labels fournis localement).
+
+📥 Données utilisées :
+-----------------------
+- Chemins des images : resources/paths_mnist.txt
+- Labels associés : resources/mnist_label.txt
+- Format des images : 28x28 px (binarisées et centrées), vectorisées en 784 dimensions
+
+📦 Modèles évalués :
+---------------------
+- SVM (Support Vector Machine)
+- Régression Logistique
+- Random Forest
+- k-Nearest Neighbors
+
+Les modèles doivent être déjà entraînés et stockés dans le dossier `models/` au format `.pkl`.
+
+🔄 Étapes principales :
+------------------------
+1. Lecture des images et labels depuis les fichiers.
+2. Chargement de chaque modèle.
+3. Prédictions sur les images MNIST.
+4. Affichage de l’accuracy et d’un rapport détaillé (precision, recall, f1-score).
+5. (Optionnel) Matrice de confusion disponible en commentaire.
+
+🧪 Librairies utilisées :
+--------------------------
+- numpy
+- opencv-python
+- scikit-learn
+- joblib
+
+📍 Résultats :
+---------------
+- Mesure la qualité de chaque modèle sur les données MNIST locales
+- Utile pour vérifier que les modèles ont bien appris pendant l’entraînement
