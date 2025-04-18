@@ -1,8 +1,2 @@
-numpy
 opencv-python
-matplotlib
-scikit-learn
-tensorflow
-easyocr
-pytesseract
-
+numpy
