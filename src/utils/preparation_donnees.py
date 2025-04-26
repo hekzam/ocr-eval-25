@@ -3,7 +3,7 @@ import pandas as pd
 from PIL import Image
 
 def extract_path_and_label(txtPath, txtLabel):
-    count = 0
+    count =0
     lTrain= len(train_list)
     lTest= len(test_list)
     with open(txtPath) as f:
@@ -19,10 +19,10 @@ def extract_path_and_label(txtPath, txtLabel):
         for line_nb, line in enumerate(f, start=0):
             line = line[:-1]
             if count/6<line_nb:
-                train_list[lTrain].append([line])
+                train_list[lTrain].append(int(line))
                 lTrain+=1
             else:
-                test_list[lTest].append([line])
+                test_list[lTest].append(int(line))
                 lTest+=1
 
 def traitement_image(image_path, label):
@@ -45,21 +45,17 @@ if __name__ == "__main__":
     train_list = []
     test_list = []
 
-    extract_path_and_label(custom_path,custom_label)
+    #TODO: remettre cette ligne de code quand probleme de syncro des txt de custom est réglé
+    #extract_path_and_label(custom_path,custom_label)
     extract_path_and_label(mnist_path,mnist_label)
-
-    print(len(train_list) , " et ", len(test_list))
     
     trainData = []
     for i in train_list:
         trainData.append(traitement_image(i[0], i[1]))
-    
+
     testData = []
     for i in test_list:
         testData.append(traitement_image(i[0], i[1]))
-
-    print( " et ", len(testData))
-
     # sauvegarde en csv 
     
     columns = ['label'] + [f'pixel{i}' for i in range(28*28)]
@@ -71,4 +67,3 @@ if __name__ == "__main__":
     df_test.to_csv(csv_test_path, index=False)
 
     print("sauvegarde en csv effectuée")
-    
