@@ -46,7 +46,7 @@ if __name__ == "__main__":
     test_list = []
 
     #TODO: remettre cette ligne de code quand probleme de syncro des txt de custom est réglé
-    #extract_path_and_label(custom_path,custom_label)
+    extract_path_and_label(custom_path,custom_label)
     extract_path_and_label(mnist_path,mnist_label)
     
     trainData = []
