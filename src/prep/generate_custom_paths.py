@@ -4,12 +4,6 @@ import re
 input_folder = "resources/custom"
 output_file = "resources/paths_custom.txt"
 
-# Récupération et tri des fichiers PNG
-files = sorted([
-    f for f in os.listdir(input_folder)
-    if f.endswith(".png") and "digit" in f
-])
-
 # Fonction qui extrait les deux index : X et Y dans raw-0-digit.X.Y.png
 def extract_double_index(filename):
     match = re.search(r'digit\.(\d+)\.(\d+)\.png', filename)
