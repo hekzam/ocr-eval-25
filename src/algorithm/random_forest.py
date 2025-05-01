@@ -1,13 +1,11 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
 #TODO: stocker la version entrainée pour ne pas réentrainer a chaque fois et accélérer le temps d'exécution
 
-def train_and_predict(x_train, y_train, x_test, y_test):
+def train_and_predict(x_train, y_train, x_test):
 
     clf = RandomForestClassifier()
     clf.fit(x_train, y_train)
@@ -24,7 +22,7 @@ if __name__ == "__main__":
     x_train,y_train=train_file.iloc[:,1:].values,train_file.iloc[:,0].values
     x_test,y_test=test_file.iloc[:,1:].values,test_file.iloc[:,0].values
 
-    prediction_test = train_and_predict(x_train, y_train, x_test, y_test)
+    prediction_test = train_and_predict(x_train, y_train, x_test)
 
     
     print("\ntest precision: ", accuracy_score(y_test, prediction_test))
