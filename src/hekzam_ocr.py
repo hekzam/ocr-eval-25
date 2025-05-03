@@ -1,6 +1,5 @@
 import argparse
 import pandas as pd
-import numpy as np
 
 def main():
     parser = argparse.ArgumentParser(description='detect numbers from images')
@@ -14,7 +13,8 @@ def main():
     x_train,y_train=train_file.iloc[:,1:].values,train_file.iloc[:,0].values
     x_test,y_test=test_file.iloc[:,1:].values,test_file.iloc[:,0].values
 
-    #TODO faire retourner les algo dans rslt.append(['nom_algo', return_algo])
+    #TODO faire retourner les algo dans rslt.append(['nom_algo', return_algo, temps execution algo])
+    #TODO faire la mesure du temps d'exécution a partir d'ici pour une méthode claire
     rslt=[]
     match args.algorithm :
         case 'knn':
