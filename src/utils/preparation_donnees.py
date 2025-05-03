@@ -60,6 +60,8 @@ if __name__ == "__main__":
     
     columns = ['label'] + [f'pixel{i}' for i in range(28*28)]
 
+    #TODO: changer le moyen de stocker les données pour un moyen plus léger (le prof avait parlé de pickle)
+
     df_train = pd.DataFrame(trainData, columns=columns)
     df_train.to_csv(csv_train_path, index=False)
 
