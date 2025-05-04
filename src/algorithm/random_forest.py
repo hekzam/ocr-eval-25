@@ -31,19 +31,17 @@ def predict(x_test):
 
 if __name__ == "__main__":
 
-    test_file = "resources/data_utilisees/test_data.pkl"
-    train_file = "resources/data_utilisees/train_data.pkl"
+    test_file = "resources/data_utilisees/test_data.parquet"
+    train_file = "resources/data_utilisees/train_data.parquet"
 
-    with open(test_file, "rb") as f:
-        df_test = pickle.load(f)
-    with open(train_file, "rb") as f:
-        df_train = pickle.load(f)
+    df_test = pd.read_parquet(test_file)
+    df_train = pd.read_parquet(train_file)
     
     x_train,y_train=df_train.iloc[:,1:].values,df_train.iloc[:,0].values
     x_test,y_test=df_test.iloc[:,1:].values,df_test.iloc[:,0].values
 
     #enlever le # pour réentrainer le programme 
-    #train(x_train, y_train)
+    train(x_train, y_train)
 
     rslt_rf = predict(x_test)
 

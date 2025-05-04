@@ -40,8 +40,8 @@ if __name__ == "__main__":
     mnist_path = "resources/paths_mnist.txt"
     mnist_label = "resources/mnist_label.txt" 
 
-    pkl_test_path = "resources/data_utilisees/test_data.pkl"
-    pkl_train_path = "resources/data_utilisees/train_data.pkl"
+    parquet_train_path = "resources/data_utilisees/train_data.parquet"
+    parquet_test_path = "resources/data_utilisees/test_data.parquet"
 
     train_list = []
     test_list = []
@@ -66,6 +66,11 @@ if __name__ == "__main__":
     df_train = pd.DataFrame(trainData, columns=columns)
     df_test = pd.DataFrame(testData, columns=columns)
 
+    df_train.to_parquet(parquet_train_path, index=False)
+    df_test.to_parquet(parquet_test_path, index=False)
+
+    """
+    #stockage en pickle (trop lourd)
     with open(pkl_test_path, 'wb') as f:
         pickle.dump(df_test, f)
     with open(pkl_train_path, 'wb') as f:
@@ -73,7 +78,8 @@ if __name__ == "__main__":
 
     print("sauvegarde pickle terminée")
     """
-    #stockage en csv  
+    """
+    #stockage en csv  (inefficace)
     csv_test_path = "resources/test_data.csv"
     csv_train_path = "resources/train_data.csv"
     
