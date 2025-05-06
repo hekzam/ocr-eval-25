@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 # TODO: stocker la version entraînée
 
 def train_and_predict(x_train, y_train, x_test, y_test):
-
+    # créer le modele
     model = SVC(probability=True)
     model.fit(x_train, y_train)
 
