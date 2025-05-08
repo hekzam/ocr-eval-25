@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pickle
 from PIL import Image
 
 def extract_path_and_label(txtPath, txtLabel):
@@ -39,8 +40,8 @@ if __name__ == "__main__":
     mnist_path = "resources/paths_mnist.txt"
     mnist_label = "resources/mnist_label.txt" 
 
-    csv_test_path = "resources/test_data.csv"
-    csv_train_path = "resources/train_data.csv"
+    parquet_train_path = "resources/data_utilisees/train_data.parquet"
+    parquet_test_path = "resources/data_utilisees/test_data.parquet"
 
     train_list = []
     test_list = []
@@ -61,11 +62,30 @@ if __name__ == "__main__":
     columns = ['label'] + [f'pixel{i}' for i in range(28*28)]
 
     #TODO: changer le moyen de stocker les données pour un moyen plus léger (le prof avait parlé de pickle)
-
+    
     df_train = pd.DataFrame(trainData, columns=columns)
-    df_train.to_csv(csv_train_path, index=False)
-
     df_test = pd.DataFrame(testData, columns=columns)
+
+    df_train.to_parquet(parquet_train_path, index=False)
+    df_test.to_parquet(parquet_test_path, index=False)
+
+    """
+    #stockage en pickle (trop lourd)
+    with open(pkl_test_path, 'wb') as f:
+        pickle.dump(df_test, f)
+    with open(pkl_train_path, 'wb') as f:
+        pickle.dump(df_train, f)
+
+    print("sauvegarde pickle terminée")
+    """
+    """
+    #stockage en csv  (inefficace)
+    csv_test_path = "resources/test_data.csv"
+    csv_train_path = "resources/train_data.csv"
+    
+
+    df_train.to_csv(csv_train_path, index=False)
     df_test.to_csv(csv_test_path, index=False)
 
-    print("sauvegarde en csv effectuée")
+    print("sauvegarde en csv terminée")
+    """

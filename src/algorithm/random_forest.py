@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import pickle
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
@@ -30,14 +31,17 @@ def predict(x_test):
 
 if __name__ == "__main__":
 
-    test_file = pd.read_csv("resources/test_data.csv")
-    train_file = pd.read_csv("resources/train_data.csv")
+    test_file = "resources/data_utilisees/test_data.parquet"
+    train_file = "resources/data_utilisees/train_data.parquet"
 
-    x_train,y_train=train_file.iloc[:,1:].values,train_file.iloc[:,0].values
-    x_test,y_test=test_file.iloc[:,1:].values,test_file.iloc[:,0].values
+    df_test = pd.read_parquet(test_file)
+    df_train = pd.read_parquet(train_file)
+    
+    x_train,y_train=df_train.iloc[:,1:].values,df_train.iloc[:,0].values
+    x_test,y_test=df_test.iloc[:,1:].values,df_test.iloc[:,0].values
 
     #enlever le # pour réentrainer le programme 
-    #train(x_train, y_train)
+    train(x_train, y_train)
 
     rslt_rf = predict(x_test)
 
