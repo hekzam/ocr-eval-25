@@ -1,10 +1,14 @@
 import argparse
 import pandas as pd
 import time
+import json
+from sklearn.metrics import accuracy_score, confusion_matrix
+
 import algorithm.knn as knn
 import algorithm.logistic_regression as lr
 import algorithm.random_forest as rf
 import algorithm.svm as svm
+
 """
 commande d'exécution (algorithm_choice= knn/svm/lr/rf):
 python heckzam_ocr.py algorithm_choice
@@ -71,10 +75,33 @@ def main():
         case 'everything':
             print()
             #TODO appel des fonctions
-        
-    for i in rslt:
-        print(i)
-        #TODO faire la gestion des données de retour 
+
+
+    #TODO faire la gestion des données de retour
+    # liste où sauvegarder les résultats    
+    resultats_export = []
+
+    for nom_algo, predictions, temps in rslt:
+        # vérifier si predictions est un tuple : (probas, prédictions)
+        y_pred = predictions[1] if isinstance(predictions, tuple) else predictions
+        acc = accuracy_score(y_test, y_pred)
+        cm = confusion_matrix(y_test, y_pred)
+
+        print(f"- {nom_algo:<20} | Précision : {acc:.4f} | Temps : {temps:.3f}s")
+
+        resultats_export.append({
+            "nom": nom_algo,
+            "precision": acc,
+            "temps": temps,
+            "matrice_confusion": cm.tolist()
+        })
+
+    # Sauvegarde matrice de confusion séparée
+    suffix = nom_algo.lower().replace(" ", "_")
+    filename = f"resources/matrice_confusion_{suffix}.json"
+    with open(filename, "w") as f:
+        json.dump(cm.tolist(), f, indent=4)
+    print(f"matrice de confusion enregistrée : {filename}")
 
 def calcul_algo(nomAlgo, modeleAlgo, x_test):
     rslt = [nomAlgo]
