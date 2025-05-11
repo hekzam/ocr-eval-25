@@ -4,6 +4,7 @@ import pickle
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+
 #besoin de normaliser les données
 from sklearn.preprocessing import StandardScaler
 
@@ -31,7 +32,7 @@ def predict(x_test):
     return prediction_test, valeurProbable
 
 
-if name == "main":
+if __name__ == "main":
 
     test_file = "resources/data_utilisees/test_data.pkl"
     train_file = "resources/data_utilisees/train_data.pkl"
