@@ -1,12 +1,12 @@
 import os
 import re
 
-custom_folder = "resources/custom"
-output_txt = "resources/custom_label.txt"
+input_folder = "resources/custom"
+output_file = "resources/custom_label.txt"
 
 # Récupération et tri des fichiers PNG
 files = sorted([
-    f for f in os.listdir(custom_folder)
+    f for f in os.listdir(input_folder)
     if f.endswith(".png") and "digit" in f
 ])
 
@@ -22,9 +22,9 @@ for file in files:
         labels.append(-1)  # Pour repérer les cas anormaux
 
 # Écriture dans le fichier
-with open(output_txt, "w") as f:
+with open(output_file, "w") as f:
     for label in labels:
         f.write(f"{label}\n")
 
-print(f"✅ Fichier de labels généré : {output_txt}")
+print(f"✅ Fichier de labels généré : {output_file}")
 print(f"🔢 Total : {len(labels)} labels")

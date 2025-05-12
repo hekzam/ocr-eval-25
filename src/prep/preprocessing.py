@@ -53,10 +53,10 @@ def traiter_image(image_path, output_path):
 
 # === Lecture du fichier contenant les paths
 if __name__ == "__main__":
-    txt_path = "resources/paths_parsed.txt"
-    output_root = "resources/custom"
+    input_file = "resources/paths_parsed.txt"
+    output_folder = "resources/custom"
     # Lecture des chemins depuis le fichier
-    with open(txt_path, 'r') as f:
+    with open(input_file, 'r') as f:
         paths = f.read().splitlines()
 
     total = len(paths)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         parts[1] = parent_folder  # on injecte le bon dossier (3)
         final_filename = "-".join(parts)
 
-        output_path = os.path.join(output_root, final_filename)
+        output_path = os.path.join(output_folder, final_filename)
 
         if traiter_image(image_path, output_path):
             success += 1
@@ -81,7 +81,7 @@ if __name__ == "__main__":
             failed += 1
 
 
-    print("\n📊 Résumé final du prétraitement :")
+    print("\n Résumé final du prétraitement :")
     print(f"🔢 Total         : {total}")
     print(f"✅ Succès        : {success}")
     print(f"⚠️  Échecs        : {failed}")

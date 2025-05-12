@@ -1,7 +1,7 @@
 import os
 import re
 
-parsed_root = "resources/parsed-200dpi"
+input_folder = "resources/parsed-200dpi"
 output_file = "resources/paths_parsed.txt"
 
 # Fonction pour trier les fichiers d’un dossier par leur index numérique
@@ -15,8 +15,8 @@ def extract_digit_index(filename):
 collected_paths = []
 
 # On parcourt les dossiers 0/, 1/, etc. dans l'ordre
-for folder in sorted(os.listdir(parsed_root), key=lambda x: int(x) if x.isdigit() else x):
-    subimg_path = os.path.join(parsed_root, folder, "subimg")
+for folder in sorted(os.listdir(input_folder), key=lambda x: int(x) if x.isdigit() else x):
+    subimg_path = os.path.join(input_folder, folder, "subimg")
     if not os.path.isdir(subimg_path):
         continue
 
