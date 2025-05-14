@@ -1,2 +1,7 @@
-opencv-python
+pandas
+scikit-learn
 numpy
+Pillow
+joblib
+opencv-python
+pyarrow

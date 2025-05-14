@@ -2,116 +2,139 @@ import argparse
 import pandas as pd
 import time
 import json
-from sklearn.metrics import accuracy_score, confusion_matrix
+import os
+from sklearn.metrics import (
+    confusion_matrix,
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    balanced_accuracy_score
+)
 
 import algorithm.knn as knn
 import algorithm.logistic_regression as lr
 import algorithm.random_forest as rf
 import algorithm.svm as svm
+from utils.sauvegarde_csv import sauvegarder_resultats_csv
 
-"""
-commande d'exécution (algorithm_choice= knn/svm/lr/rf):
-python heckzam_ocr.py algorithm_choice
-si ca ne marche pas essayer celle ci (en modifiant les liens interne pour correspondre):
-& path/to/python.exe path/to/hekzam_ocr.py algorithm_choice
-& C:/Users/pauli/AppData/Local/Programs/Python/Python313/python.exe c:/Users/pauli/Documents/git/ocr-eval-25/src/hekzam_ocr.py rf
-"""
+
+def calculer_metriques(y_true, y_pred):
+    return {
+        "accuracy": accuracy_score(y_true, y_pred),
+        "precision": precision_score(y_true, y_pred, average='macro', zero_division=0),
+        "recall": recall_score(y_true, y_pred, average='macro', zero_division=0),
+        "f1_score": f1_score(y_true, y_pred, average='macro', zero_division=0),
+        "balanced_accuracy": balanced_accuracy_score(y_true, y_pred)
+    }
+
+def calcul_algo(nom_algo, module, x_test):
+    print(f"Prédiction avec {nom_algo}...")
+    start = time.perf_counter()
+    y_pred = module.predict(x_test)
+    stop = time.perf_counter()
+    print(f"Prédiction terminée en {stop - start:.3f}s")
+    return [nom_algo, y_pred, stop - start]
+
+def executer_algo(nom, module, x_train, y_train, x_test, do_train):
+    if do_train:
+        start = time.perf_counter()
+        module.train(x_train, y_train)
+        stop = time.perf_counter()
+        print(f"Modèle '{nom}' entraîné en {stop - start:.3f}s")
+
+        # Sauvegarde temps dans fichier JSON
+        suffix = nom.lower().replace(" ", "_")
+        with open(f"results/temp/temps_train_{suffix}.json", "w") as f:
+            json.dump({"temps": stop - start}, f)
+
+        return None  # pas de prédiction
+
+    return calcul_algo(nom, module, x_test)
+
 def main():
     parser = argparse.ArgumentParser(description='detect numbers from images')
-    parser.add_argument('algorithm', metavar = 'algorithm', help= 'choose the algorithm to use',
+    parser.add_argument('algorithm', metavar='algorithm', help='choose the algorithm to use',
                         choices=['knn', 'svm', 'rf', 'lr', 'everything'])
-    parser.add_argument('--train', help= 'specify whether to train the model',
+    parser.add_argument('--train', help='specify whether to train the model',
                         action='store_true')
-
     args = parser.parse_args()
-
-    file_model_knn = "resources/models/knn_model.pkl" 
-    file_model_svm = "resources/models/svm_model.pkl"
-    file_model_rf = "resources/models/rf_model.pkl"
-    file_model_lr = "resources/models/lr_model.pkl"
 
     df_test = pd.read_parquet("resources/data_utilisees/test_data.parquet")
     df_train = pd.read_parquet("resources/data_utilisees/train_data.parquet")
 
-    x_train,y_train=df_train.iloc[:,1:].values,df_train.iloc[:,0].values
-    x_test,y_test=df_test.iloc[:,1:].values,df_test.iloc[:,0].values
+    x_train, y_train = df_train.iloc[:, 1:].values, df_train.iloc[:, 0].values
+    x_test, y_test = df_test.iloc[:, 1:].values, df_test.iloc[:, 0].values
 
-    #TODO faire retourner les algo dans rslt.append(['nom_algo', return_algo, temps execution algo])
-    #TODO detection de train fait ou pas fait, return en fonction "merci de faire l'entrainement avant de lancer le model x"
-    rslt=[]
-    match args.algorithm :
+    rslt = []
+
+    match args.algorithm:
         case 'knn':
-            if args.train:
-                start = time.perf_counter()
-                knn.train(x_train, y_train, 3)
-                stop = time.perf_counter()
-                print("temps d'entrainement: "+ str(stop-start))
-            rslt.append(calcul_algo("knn", knn, x_test))
-            
+            r = executer_algo("knn", knn, x_train, y_train, x_test, args.train)
+            if r: rslt.append(r)
         case 'svm':
-            if args.train:
-                start = time.perf_counter()
-                svm.train(x_train, y_train)
-                stop = time.perf_counter()
-                print("temps d'entrainement: "+ str(stop-start))
-            rslt.append(calcul_algo("svm", svm, x_test))
-
+            r = executer_algo("svm", svm, x_train, y_train, x_test, args.train)
+            if r: rslt.append(r)
         case 'rf':
-            if args.train:
-                start = time.perf_counter()
-                rf.train(x_train, y_train)
-                stop = time.perf_counter()
-                print("temps d'entrainement: "+ str(stop-start))
-            rslt.append(calcul_algo("random forest", rf, x_test))
-
+            r = executer_algo("random forest", rf, x_train, y_train, x_test, args.train)
+            if r: rslt.append(r)
         case 'lr':
-            if args.train:
-                start = time.perf_counter()
-                lr.train(x_train, y_train)
-                stop = time.perf_counter()
-                print("temps d'entrainement: "+ str(stop-start))
-            rslt.append(calcul_algo("logistic regression", lr, x_test))
-
+            r = executer_algo("logistic regression", lr, x_train, y_train, x_test, args.train)
+            if r: rslt.append(r)
         case 'everything':
-            print()
-            #TODO appel des fonctions
+            for nom, module in [
+                ("knn", knn),
+                ("svm", svm),
+                ("random forest", rf),
+                ("logistic regression", lr)
+            ]:
+                r = executer_algo(nom, module, x_train, y_train, x_test, args.train)
+                if r: rslt.append(r)
 
-
-    #TODO faire la gestion des données de retour
-    # liste où sauvegarder les résultats    
+    # Si on est en mode test (pas juste entraînement)
     resultats_export = []
 
     for nom_algo, predictions, temps in rslt:
-        # vérifier si predictions est un tuple : (probas, prédictions)
         y_pred = predictions[1] if isinstance(predictions, tuple) else predictions
-        acc = accuracy_score(y_test, y_pred)
         cm = confusion_matrix(y_test, y_pred)
+        metriques = calculer_metriques(y_test, y_pred)
 
-        print(f"- {nom_algo:<20} | Précision : {acc:.4f} | Temps : {temps:.3f}s")
+        print(f"\nRésultats pour {nom_algo} (temps de test : {temps:.3f}s)")
+        for nom, val in metriques.items():
+            print(f"  - {nom:<18}: {val:.4f}")
 
         resultats_export.append({
             "nom": nom_algo,
-            "precision": acc,
             "temps": temps,
+            "metriques": metriques,
             "matrice_confusion": cm.tolist()
         })
 
-    # Sauvegarde matrice de confusion séparée
-    suffix = nom_algo.lower().replace(" ", "_")
-    filename = f"resources/matrice_confusion_{suffix}.json"
-    with open(filename, "w") as f:
-        json.dump(cm.tolist(), f, indent=4)
-    print(f"matrice de confusion enregistrée : {filename}")
+        # Sauvegarde matrice de confusion
+        suffix = nom_algo.lower().replace(" ", "_")
+        filename = f"results/confusion_matrices/matrice_confusion_{suffix}.json"
+        with open(filename, "w") as f:
+            json.dump(cm.tolist(), f, indent=4)
+        print(f"Matrice enregistrée : {filename}")
 
-def calcul_algo(nomAlgo, modeleAlgo, x_test):
-    rslt = [nomAlgo]
-    start = time.perf_counter()
-    rslt.append(modeleAlgo.predict(x_test))
-    stop = time.perf_counter()
-    rslt.append(stop-start)
-    print("calcul "+nomAlgo+" terminé")
-    return rslt
-    
+        # Lecture du temps d'entraînement depuis le fichier JSON
+        try:
+            with open(f"results/temp/temps_train_{suffix}.json") as f:
+                temps_train = json.load(f)["temps"]
+            os.remove(f"results/temp/temps_train_{suffix}.json")
+        except FileNotFoundError:
+            temps_train = 0.0
+
+        # Sauvegarde CSV
+        sauvegarder_resultats_csv(
+            nom_algo=nom_algo,
+            metriques=metriques,
+            temps_train=temps_train,
+            temps_test=temps,
+            n_train=10000 if nom_algo == "svm" else len(x_train),
+            n_test=len(x_test)
+        )
+
 
 if __name__ == "__main__":
     main()
