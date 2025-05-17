@@ -52,13 +52,122 @@ def executer_algo(nom, module, x_train, y_train, x_test, do_train):
 
     return calcul_algo(nom, module, x_test)
 
+def total_data():
+    mnist_label = "resources/mnist_label.txt"
+    custom_label = "resources/custom_label.txt" 
+    with open(mnist_label) as f:
+        count = sum(1 for _ in f)
+    with open(custom_label) as f:
+        count += sum(1 for _ in f)
+    return count
+
+def authorized_ratio(entry):
+    try:
+        entry = float(entry)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{entry} is not a float")
+    if entry < 0.1 or entry > 0.99:
+        raise argparse.ArgumentTypeError(f"{entry} is not in range 0.1-0.99")
+    return entry
+
+def authorized_size(entry):
+    try:
+        entry = int(entry)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{entry} is not an integer")
+    if entry < 2 or entry > total_data():
+        raise argparse.ArgumentTypeError(f"{entry} is not in range 2-"+total_data())
+    return entry
+
+def build_model_output(entry):
+    return entry+"/trained_model.pkl"
+
+def build_train_output(entry):
+    return entry+"/train_data.parquet"
+
+def build_test_output(entry):
+    return entry+"/test_data.parquet"
+
+def build_result_output(entry):             #TODO: mettre un bon nom de variable de sortie 
+    return entry+"/trained_model.pkl"
+
+def validate(entry, list_valid):
+    valid_option = list_valid
+    rslt = entry.split(',')
+    for f in rslt:
+        if f not in valid_option:
+            raise argparse.ArgumentTypeError(f"Invalid feature: {f}")
+    return '+'.join(rslt)
+
+def valid_features(entry):
+    return validate(entry, {"flatten", "zoning", "4lrp"})
+
+def valid_models(entry):
+    return validate(entry, {"knn", "svm", "rf", "lr"})
+
+
 def main():
-    parser = argparse.ArgumentParser(description='detect numbers from images')
-    parser.add_argument('algorithm', metavar='algorithm', help='choose the algorithm to use',
-                        choices=['knn', 'svm', 'rf', 'lr', 'everything'])
-    parser.add_argument('--train', help='specify whether to train the model',
+    
+    #permet de vérifier si training est activé pour faire des options seulement si il l'est
+    pre_parser = argparse.ArgumentParser(add_help=False)
+    pre_parser.add_argument('train', help= 'specify whether to train the model',
+                        type=valid_models, default=None)
+    pre_parser.add_argument('model', help= 'choose the algorithm to use',
+                        type=valid_models, default = None)
+    pre_parser.add_argument('rebuild_data', help = 'restart building the data, allow changes in features and dataset used in next execution',
                         action='store_true')
+    pre_args,_ = pre_parser.parse_known_args()
+
+    #parser complet
+    parser = argparse.ArgumentParser(description='detect numbers from images', 
+                                     parents=[pre_parser])
+    
+    #ajoute les arguments de rebuild data
+    if pre_args.rebuild_data:
+        parser.add_argument('--custom_train_output',
+                            help='choose where the train data will be stored',
+                            type=build_train_output,
+                            default="resources/data_utilisees/train_data.parquet")
+        parser.add_argument('--custom_test_output',
+                            help='choose where the test data will be stored',
+                            type=build_test_output,
+                            default="resources/data_utilisees/test_data.parquet")
+        parser.add_argument('--features', help="choose the method used to extract features",
+                            type=valid_features, default="flatten+zoning")
+        parser.add_argument('--training_ratio', 
+                            help='choose how many of the data will be used to train, the remaining will be used in test. from 0.1 to 0.99',
+                            type=authorized_ratio, default = 0.8)
+        parser.add_argument('--data_size', 
+                            help='choose the size of the used data',
+                            type= authorized_size, default= total_data())
+        
+    #ajoute les arguments de train
+    elif pre_args.train!=None:
+        parser.add_argument('--custom_input')
+        parser.add_argument('--custom_output', help='choose where the model is stored, the file will be created',
+                            type= build_result_output,
+                            default="results/confusion_matrices/")
+        match pre_args.train:           #TODO: ajouter les implementations custom
+            case 'knn':
+                print()
+            case 'svm':
+                print()
+            case 'lr':
+                print()
+            case 'rf':
+                print()
+
+    #ajoute les arguments de l'execution des models
+    elif pre_args.model!=None:
+        parser.add_argument('--custom_input', help='choose where the model is stored',
+                            default="resources/models/"+ pre_args.model +"_model.pkl")
+        parser.add_argument('--custom_output', help='choose where the model is stored',
+                            type= build_model_output,
+                            default="resources/models/"+ pre_args.model +"_model.pkl")
+
     args = parser.parse_args()
+    print(args)
+
 
     df_test = pd.read_parquet("resources/data_utilisees/test_data.parquet")
     df_train = pd.read_parquet("resources/data_utilisees/train_data.parquet")
@@ -112,7 +221,7 @@ def main():
 
         # Sauvegarde matrice de confusion
         suffix = nom_algo.lower().replace(" ", "_")
-        filename = f"results/confusion_matrices/matrice_confusion_{suffix}.json"
+        filename = args.custom_output+"matrice_confusion_{suffix}.json"
         with open(filename, "w") as f:
             json.dump(cm.tolist(), f, indent=4)
         print(f"Matrice enregistrée : {filename}")
