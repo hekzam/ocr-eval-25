@@ -12,16 +12,22 @@ def train(x_train, y_train):
     # réduction du jeu d'entraînement
     x_train = x_train[:SUBSET]
     y_train = y_train[:SUBSET]
+ # Création du modèle SVM avec :
+    # - un noyau RBF (Radial Basis Function), qui est souvent le plus performant pour la classification de chiffres manuscrits (selon l'état de l'art)
+    # - un paramètre de régularisation C = 50 (favorise une faible erreur d'entraînement au détriment d’un risque potentiel de surapprentissage)
+    # - gamma = "scale", ce qui adapte automatiquement le gamma en fonction de la variance des données (recommandé pour une bonne stabilité)
+    clf = SVC(probability=True, kernel='rbf', C=50, gamma="scale")
 
-    clf = SVC(probability=True)
     clf.fit(x_train, y_train)
+
     joblib.dump(clf, MODEL_PATH)
     print("Modèle SVM entraîné et compressé")
 
 def predict(x_test):
+        # Chargement du modèle entraîné
     clf= joblib.load(MODEL_PATH)
     prediction_test = clf.predict_proba(x_test)
-
+    # Récupération de la classe avec la plus haute probabilité pour chaque exemple
     valeurProbable = []
     for i in range(len(prediction_test)):
         predicted_label = prediction_test[i].argmax()
