@@ -14,8 +14,8 @@ def train(x_train, y_train):
     y_train = y_train[:SUBSET]
  # Création du modèle SVM avec :
     # - un noyau RBF (Radial Basis Function), qui est souvent le plus performant pour la classification de chiffres manuscrits (selon l'état de l'art)
-    # - un paramètre de régularisation C = 50 (favorise une faible erreur d'entraînement au détriment d’un risque potentiel de surapprentissage)
-    # - gamma = "scale", ce qui adapte automatiquement le gamma en fonction de la variance des données (recommandé pour une bonne stabilité)
+    # - un paramètre de régularisation C = 50 (favorise une faible erreur d'entraînement)
+    # - gamma = "scale", ce qui adapte automatiquement le gamma en fonction de la variance des données 
     clf = SVC(probability=True, kernel='rbf', C=50, gamma="scale")
 
     clf.fit(x_train, y_train)
