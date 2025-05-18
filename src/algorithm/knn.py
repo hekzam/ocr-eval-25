@@ -4,22 +4,22 @@ import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-MODEL_PATH = "resources/models/knn_model.pkl"
 # valeurs choisies à partir de knn_search
 K_VALUE = 3
-SUBSET_SIZE = 60000
 
-def train(x_train, y_train):
-    # réduction de la taille des données
-    x_train = x_train[:SUBSET_SIZE]
-    y_train = y_train[:SUBSET_SIZE]
+def train(x_train, y_train, output, subset):
+    # réduction du jeu d'entraînement
+    if subset>0:
+        x_train = x_train[:subset]
+        y_train = y_train[:subset]
 
-    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-    joblib.dump((x_train, y_train, K_VALUE), MODEL_PATH, compress=3)
+    os.makedirs(os.path.dirname(output), exist_ok=True)
+    joblib.dump((x_train, y_train, K_VALUE), output, compress=3)
     print(f"Données KNN sauvegardées (k={K_VALUE}, n={len(x_train)})")
 
-def predict(x_test):
-    x_train, y_train, _ = joblib.load(MODEL_PATH)
+def predict(x_test, input):
+    x_train, y_train, _ = joblib.load(input)
+    print(x_train.shape[1], x_test.shape[1] ) 
     knn_classifier = KNeighborsClassifier(n_neighbors=K_VALUE)
     knn_classifier.fit(x_train, y_train)
     prediction_test = knn_classifier.predict(x_test)

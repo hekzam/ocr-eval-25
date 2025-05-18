@@ -5,27 +5,26 @@ import joblib
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 
-MODEL_PATH = "resources/models/svm_model.pkl"
-SUBSET = 10000  # limite à 10 000 exemples d'entraînement
 
-def train(x_train, y_train):
+def train(x_train, y_train, output, subset, c):
     # réduction du jeu d'entraînement
-    x_train = x_train[:SUBSET]
-    y_train = y_train[:SUBSET]
+    if subset>0:
+        x_train = x_train[:subset]
+        y_train = y_train[:subset]
  # Création du modèle SVM avec :
     # - un noyau RBF (Radial Basis Function), qui est souvent le plus performant pour la classification de chiffres manuscrits (selon l'état de l'art)
     # - un paramètre de régularisation C = 50 (favorise une faible erreur d'entraînement)
     # - gamma = "scale", ce qui adapte automatiquement le gamma en fonction de la variance des données 
-    clf = SVC(probability=True, kernel='rbf', C=50, gamma="scale")
+    clf = SVC(probability=True, kernel='rbf', C=c, gamma="scale")
 
     clf.fit(x_train, y_train)
 
-    joblib.dump(clf, MODEL_PATH)
+    joblib.dump(clf, output)
     print("Modèle SVM entraîné et compressé")
 
-def predict(x_test):
+def predict(x_test, input):
         # Chargement du modèle entraîné
-    clf= joblib.load(MODEL_PATH)
+    clf= joblib.load(input)
     prediction_test = clf.predict_proba(x_test)
     # Récupération de la classe avec la plus haute probabilité pour chaque exemple
     valeurProbable = []

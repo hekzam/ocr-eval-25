@@ -5,12 +5,12 @@ from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 
-MODEL_PATH = "resources/models/linear_svm_model.pkl"
-SUBSET = 10000  # Limite à 10 000 exemples pour l'entraînement
 
-def train(x_train, y_train):
-    x_train = x_train[:SUBSET]
-    y_train = y_train[:SUBSET]
+def train(x_train, y_train, output, subset):
+    # réduction du jeu d'entraînement
+    if subset>0:
+        x_train = x_train[:subset]
+        y_train = y_train[:subset]
 
     scaler = StandardScaler()
     x_train = scaler.fit_transform(x_train)
@@ -18,11 +18,11 @@ def train(x_train, y_train):
     clf = LinearSVC()
     clf.fit(x_train, y_train)
 
-    joblib.dump((clf, scaler), MODEL_PATH)
+    joblib.dump((clf, scaler), output)
     print("Modèle LinearSVC entraîné et sauvegardé.")
 
-def predict(x_test):
-    clf, scaler = joblib.load(MODEL_PATH)
+def predict(x_test, input):
+    clf, scaler = joblib.load(input)
     x_test = scaler.transform(x_test)
 
     valeurProbable = clf.predict(x_test)

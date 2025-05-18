@@ -7,17 +7,20 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 
 #TODO: mesurer le temps d'execution 
 
-MODEL_PATH = "resources/models/rf_model.pkl"
 
-def train(x_train, y_train):
+def train(x_train, y_train, ouput, subset):
+    # réduction du jeu d'entraînement
+    if subset>0:
+        x_train = x_train[:subset]
+        y_train = y_train[:subset]
     clf = RandomForestClassifier(n_estimators=50, max_depth=15, random_state=42)
     clf.fit(x_train, y_train)
     # sauvegarde compressée
-    joblib.dump(clf, MODEL_PATH, compress=3)
+    joblib.dump(clf, ouput, compress=3)
     print("Modèle Random Forest entraîné et compressé")
 
-def predict(x_test):
-    clf = joblib.load(MODEL_PATH)
+def predict(x_test, input):
+    clf = joblib.load(input)
     prediction_test = clf.predict_proba(x_test)
 
     valeurProbable = []
