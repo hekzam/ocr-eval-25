@@ -67,35 +67,59 @@ ocr_eval_25/
 Le projet heckzam_ocr propose une suite complète d'outils pour la gestion de pipelines d'OCR basés sur des algorithmes de machine learning classiques.
 
 Reconstruction des données
+
     Fusionne des jeux de données (ex : MNIST + dataset personnalisé)
+    
     Extrait des caractéristiques (flatten, zoning, 4lrp)
+    
     Divise automatiquement en train/test selon un ratio défini
 
 Entraînement de modèles
+
     Supporte plusieurs algorithmes :
+    
         KNN (K-Nearest Neighbors)
+        
         SVM (Support Vector Machine)
+        
         Random Forest
+        
         Logistic Regression
+        
         Linear SVM
+        
     Possibilité de régler les sous-ensembles d'entraînement et hyperparamètres
 
 Exécution et évaluation
+
     Charge les modèles entraînés et prédit sur les données de test
+    
     Calcule automatiquement :
+    
         Accuracy
+        
         Precision
+        
         Recall
+        
         F1-Score
+        
         Balanced Accuracy
+    
     Génère une matrice de confusion par modèle
+    
     Chronomètre les temps d'entraînement et d'inférence
 
 Export et rapports
+    
     Sauvegarde des résultats au format :
+    
         .json (matrices, résultats bruts)
+        
         .csv (résumé des performances)
+    
     Structure de dossiers personnalisable
+    
     Rapports compatibles avec des outils d’analyse externes
 
 ---
