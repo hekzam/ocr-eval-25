@@ -1,7 +1,10 @@
+numpy
 pandas
 scikit-learn
-numpy
+matplotlib
+seaborn
+scipy
+opencv-python
 Pillow
 joblib
-opencv-python
 pyarrow

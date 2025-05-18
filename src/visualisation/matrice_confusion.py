@@ -41,5 +41,5 @@ def construire_matrice_confusion(nom_modele, input, output):
     plt.xticks(rotation=45)
     plt.yticks(rotation=0)
     plt.tight_layout()
-    plt.savefig(output+'matrice_confusion_svm.png', dpi=300)
+    plt.savefig(output+'matrice_confusion_'+nom_modele+'.png', dpi=300)
     plt.show()
