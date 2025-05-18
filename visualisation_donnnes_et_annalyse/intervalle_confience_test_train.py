@@ -38,7 +38,7 @@ for data in datasets:
     err_train.append(err_t)
     err_test.append(err_te)
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10), sharey=True)  # Taille augmentée
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10), sharey=True)
 
 x = np.arange(len(algorithmes))
 largeur = 0.6
@@ -47,7 +47,7 @@ largeur = 0.6
 bars_train = ax1.bar(x, temps_train, yerr=err_train, capsize=12, color=couleurs,
                      edgecolor='black', width=largeur)
 ax1.set_xticks(x)
-ax1.set_xticklabels(algorithmes, rotation=30, fontsize=18)  # Texte plus grand
+ax1.set_xticklabels(algorithmes, rotation=30, fontsize=18)
 ax1.set_ylabel('Temps (secondes)', fontsize=20)
 ax1.set_title("Temps moyen d'entraînement (± IC 95%)", fontsize=24)
 ax1.grid(axis='y', linestyle='--', alpha=0.7)
