@@ -1,2 +1,0 @@
-algorithme,n_train,n_test,temps_entrainement,temps_test,accuracy,precision,recall,f1_score,balanced_accuracy
-random forest,52960,13240,9.8235,0.2731,0.9511,0.951,0.951,0.9509,0.951

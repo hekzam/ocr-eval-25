@@ -10,7 +10,9 @@ from sklearn.metrics import (
     f1_score,
     balanced_accuracy_score
 )
-
+import visualisation.matrice_confusion as matrice_c
+import visualisation.intervalle_confiance as int_conf
+import visualisation.optimum_pareto as optimum
 import utils.main_tools as tools
 from utils.sauvegarde_csv import sauvegarder_resultats_csv
 
@@ -70,7 +72,7 @@ def valid_features(entry):
     return validate(entry, {"flatten", "zoning", "4lrp"})
 
 def valid_models(entry):
-    return validate(entry, {"knn", "svm", "rf", "lr", "linear_svm"})
+    return validate(entry, {"knn", "svm", "rf", "lr"})
 
 
 
@@ -78,12 +80,12 @@ def main():
     
     #permet de vérifier si training est activé pour faire des options seulement si il l'est
     pre_parser = argparse.ArgumentParser(add_help=False)
-    pre_parser.add_argument('--train', help= 'choose to train a model',
-                        type=valid_models, default=None)
-    pre_parser.add_argument('--model', help= 'choose the model to use',
-                        type=valid_models, default = None)
     pre_parser.add_argument('--rebuild_data', help = 'restart building the data, allow changes in features and dataset used in next execution',
                         action='store_true')
+    pre_parser.add_argument('--train', help= 'choose to train a model',
+                        type=valid_models, default=None)
+    pre_parser.add_argument('--test', help= 'choose the model to use',
+                        type=valid_models, default = None)
     pre_args,_ = pre_parser.parse_known_args()
 
     #parser complet
@@ -114,9 +116,6 @@ def main():
                                 type = int, default = 10000)
             parser.add_argument('--svm_regulation_parameter', help='choose the regulation parameter',
                                 type = int, default=50)
-        if 'linear_svm' in pre_args.train:
-            parser.add_argument('--lsvm_subset', help='choose the number of data used to train the model, -1 to use everything', 
-                                type = int, default = 10000)
         if 'rf' in pre_args.train:
             parser.add_argument('--rf_subset', help='choose the number of data used to train the model, -1 to use everything', 
                                 type = int, default = -1)
@@ -126,14 +125,19 @@ def main():
             
 
     #ajoute les arguments de l'execution des models
-    #TODO, faire en sorte que l'adresse ne comporte pas de fichier dans le resultat, possibilité de plusieurs model exec
-    if pre_args.model!=None:
+    if pre_args.test!=None:
         parser.add_argument('--m_custom_input', help='choose where the model is picked-up, doesnt work if the model have a custom name',
                             type=is_directory,
-                            default="results/confusion_matrices")
+                            default="results/models")
         parser.add_argument('--m_custom_output', help='choose where the result is stored',
                             type=is_directory,
                             default="results/results_algo")
+        parser.add_argument('--m_confusion_matrix', type=is_directory,
+                            nargs='?', const='results/visuels', default=None,
+                            help='build the confusion matrix. without value: save in default. with value: use given path.')
+        parser.add_argument('--m_visuals_construction', type=is_directory,
+                            nargs='?', const='results/visuels', default=None,
+                            help="build the advanced visuals only if all models are casted. without value: save in default. with value: use given path.")
 
     args = parser.parse_args()
     print(args)
@@ -157,10 +161,9 @@ def main():
         tools.entrainement_models(pre_args, args, x_train, y_train)
     
     
-    if pre_args.model != None:
-        print(x_train.shape[1], x_test.shape[1] ) 
+    if pre_args.test != None:
+
         rslt = tools.exec_models(pre_args, args, x_test)
-        print(x_train.shape[1], x_test.shape[1] ) 
             
         # construction des resultats
         resultats_export = []
@@ -190,9 +193,9 @@ def main():
 
             # Lecture du temps d'entraînement depuis le fichier JSON
             try:
-                with open(f"results/temp/temps_train_{suffix}.json") as f:
+                with open(f"results/temps_entrainement/temps_train_{suffix}.json") as f:
                     temps_train = json.load(f)["temps"]
-                os.remove(f"results/temp/temps_train_{suffix}.json")
+                os.remove(f"results/temps_entrainement/temps_train_{suffix}.json")
             except FileNotFoundError:
                 temps_train = 0.0
 
@@ -206,6 +209,34 @@ def main():
                 n_test=len(x_test), 
                 dossier_fichier= args.m_custom_output
             )
+            if args.m_confusion_matrix!=None:
+                match nom_algo:
+                    case "knn":
+                        matrice_c.construire_matrice_confusion(nom_algo,args.m_custom_output+ "matrice_confusion_knn.json",
+                                                               args.m_confusion_matrix)
+                    case "svm":
+                        matrice_c.construire_matrice_confusion(nom_algo,args.m_custom_output+ "matrice_confusion_svm.json",
+                                                               args.m_confusion_matrix)
+                    case "random forest":
+                        matrice_c.construire_matrice_confusion(nom_algo,args.m_custom_output+ "matrice_confusion_random_forest.json",
+                                                               args.m_confusion_matrix)
+                    case "logistic regression":
+                        matrice_c.construire_matrice_confusion(nom_algo,args.m_custom_output+ "matrice_confusion_logistic_regression.json",
+                                                               args.m_confusion_matrix)
+
+        if (args.m_visuals_construction!=None and 
+             "knn" in pre_args.test and 
+             "svm" in pre_args.test and 
+             "rf" in pre_args.test and 
+             "lr" in pre_args.test ):
+            #TODO appeler intervalle et optimum args.m_confusion_matrix
+            knn_csv = args.m_custom_output + "/resultats_knn.csv"
+            svm_csv = args.m_custom_output + "/resultats_svm.csv"
+            lr_csv = args.m_custom_output + "/resultats_random_forest.csv"
+            rf_csv = args.m_custom_output + "/resultats_logistic_regression.csv"
+            int_conf.construire_intervalle_confiance(pd.read_csv(knn_csv), pd.read_csv(svm_csv),
+                                                    pd.read_csv(lr_csv), pd.read_csv(rf_csv))
+            optimum.construire_optimum(knn_csv, svm_csv, lr_csv, rf_csv)
 
 
 

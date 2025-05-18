@@ -74,7 +74,7 @@ def entrainement_models(pre_args, args, x_train, y_train):
 
         # Sauvegarde temps dans fichier JSON
         suffix = nom.lower().replace(" ", "_")
-        with open(f"results/temp/temps_train_{suffix}.json", "w") as f:
+        with open(f"results/temps_entrainement/temps_train_{suffix}.json", "w") as f:
             json.dump({"temps": stop - start}, f)
     
     if 'svm' in pre_args.train:
@@ -86,19 +86,7 @@ def entrainement_models(pre_args, args, x_train, y_train):
 
         # Sauvegarde temps dans fichier JSON
         suffix = nom.lower().replace(" ", "_")
-        with open(f"results/temp/temps_train_{suffix}.json", "w") as f:
-            json.dump({"temps": stop - start}, f)
-    
-    if 'linear_svm' in pre_args.train:
-        nom = "linear_svm"
-        start = time.perf_counter()
-        linear_svm.train(x_train, y_train, args.t_custom_output+ "linear_svm_model.pkl", args.lsvm_subset)
-        stop = time.perf_counter()
-        print(f"Modèle '{nom}' entraîné en {stop - start:.3f}s")
-
-        # Sauvegarde temps dans fichier JSON
-        suffix = nom.lower().replace(" ", "_")
-        with open(f"results/temp/temps_train_{suffix}.json", "w") as f:
+        with open(f"results/temps_entrainement/temps_train_{suffix}.json", "w") as f:
             json.dump({"temps": stop - start}, f)
 
     if 'rf' in pre_args.train:
@@ -110,7 +98,7 @@ def entrainement_models(pre_args, args, x_train, y_train):
 
         # Sauvegarde temps dans fichier JSON
         suffix = nom.lower().replace(" ", "_")
-        with open(f"results/temp/temps_train_{suffix}.json", "w") as f:
+        with open(f"results/temps_entrainement/temps_train_{suffix}.json", "w") as f:
             json.dump({"temps": stop - start}, f)
 
     if 'lr' in pre_args.train:
@@ -122,26 +110,23 @@ def entrainement_models(pre_args, args, x_train, y_train):
 
         # Sauvegarde temps dans fichier JSON
         suffix = nom.lower().replace(" ", "_")
-        with open(f"results/temp/temps_train_{suffix}.json", "w") as f:
+        with open(f"results/temps_entrainement/temps_train_{suffix}.json", "w") as f:
             json.dump({"temps": stop - start}, f)
 
 
 def exec_models(pre_args, args, x_test):
     rslt = []
-    if 'knn' in pre_args.model:
+    if 'knn' in pre_args.test:
         r = calcul_model("knn", knn, x_test, args.m_custom_input+ "knn_model.pkl")
         rslt.append(r)
-    if 'svm' in pre_args.model:
+    if 'svm' in pre_args.test:
         r = calcul_model("svm", svm, x_test, args.m_custom_input+ "svm_model.pkl")
         rslt.append(r)
-    if 'linear_svm' in pre_args.model:
-        r = calcul_model("linear_svm", linear_svm, x_test, args.m_custom_input+ "linear_svm_model.pkl")
-        rslt.append(r)
-    if 'rf' in pre_args.model:
+    if 'rf' in pre_args.test:
         r = calcul_model("random forest", rf, x_test, args.m_custom_input+ "rf_model.pkl")
         rslt.append(r)
-    if 'lr' in pre_args.model:
-        r = calcul_model("logisitc regression", lr, x_test, args.m_custom_input+ "lr_model.pkl")
+    if 'lr' in pre_args.test:
+        r = calcul_model("logistic regression", lr, x_test, args.m_custom_input+ "lr_model.pkl")
         rslt.append(r) 
 
     return rslt
