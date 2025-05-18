@@ -2,13 +2,14 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 from sklearn.model_selection import train_test_split
-from extraction_features import zoning_features, extract_4lrp_features
+from utils.extraction_features import zoning_features, extract_4lrp_features
 import csv
 import argparse
 
 
 # lit les paths et labels et retourne un tuple
 def read_paths_and_labels(path_file, label_file):
+    
     with open(path_file, "r") as f:
         paths = [line.strip() for line in f]
     with open(label_file, "r") as f:
@@ -39,7 +40,8 @@ def process_image(image_path, label, feature_type="flatten+zoning"):
 
 
 # Applique le prétraitement à la liste d'images
-def process_dataset(dataset):
+def process_dataset(dataset, data_size, feature_type):
+    dataset = dataset[:data_size]
     return [process_image(path, label, feature_type=feature_type) for path, label in dataset]
 
 
@@ -69,11 +71,8 @@ def build_dataframe(data, feature_type, n_zones=4):
 
 # par défaut il utilise la méthode flatten + zoning
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--features", default="flatten+zoning", help="Méthodes d'extraction : flatten, zoning, 4lrp ou combinaison ex: flatten+4lrp")
-    args = parser.parse_args()
 
-    feature_type = args.features
+    feature_type = "flatten+zoning"
 
     # Fichiers
     mnist_path_file = "resources/paths_mnist.txt"
@@ -97,8 +96,13 @@ if __name__ == "__main__":
     print(f"Custom : {len(custom_train)} train / {len(custom_test)} test")
 
     # Traitement des images
-    train_data = process_dataset(mnist_train + custom_train)
-    test_data = process_dataset(mnist_test + custom_test)
+    with open(mnist_label_file) as f:
+        count = sum(1 for _ in f)
+    with open(custom_label_file) as f:
+        count += sum(1 for _ in f)
+    
+    train_data = process_dataset(mnist_train + custom_train, int(count*0.8))
+    test_data = process_dataset(mnist_test + custom_test, int(count*0.2))
 
     # Création des DataFrames
     df_train = build_dataframe(train_data, feature_type, n_zones=4)

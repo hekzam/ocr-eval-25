@@ -9,18 +9,22 @@ from sklearn.metrics import confusion_matrix
 #besoin de normaliser les données
 from sklearn.preprocessing import StandardScaler
 
-MODEL_PATH = "resources/models/lr_model.pkl"
 
-def train(x_train, y_train):
+def train(x_train, y_train, output, subset):
+    # réduction du jeu d'entraînement
+    if subset>0:
+        x_train = x_train[:subset]
+        y_train = y_train[:subset]
+    
     scaler = StandardScaler()
     x_train = scaler.fit_transform(x_train)
     clf = LogisticRegression(max_iter=1000) # on rajoute cette option pour plus d'iter
     clf.fit(x_train, y_train)
-    joblib.dump((clf, scaler), MODEL_PATH) # ici on sauvegarde le modele + le scaler
+    joblib.dump((clf, scaler), output) # ici on sauvegarde le modele + le scaler
     print("Model trained and saved.")
 
-def predict(x_test):
-    clf, scaler = joblib.load(MODEL_PATH) # ici on récupère le tuple
+def predict(x_test, input):
+    clf, scaler = joblib.load(input) # ici on récupère le tuple
     x_test = scaler.transform(x_test) # on normalise
     prediction_test = clf.predict_proba(x_test) # calculer les probas pour chaque classe
 
