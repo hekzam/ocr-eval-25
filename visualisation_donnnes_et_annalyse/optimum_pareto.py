@@ -62,7 +62,7 @@ ax.plot(precisions[pareto_idx], temps_total[pareto_idx], color='red', linewidth=
 
 ax.set_xlabel("Précision", fontsize=12)
 ax.set_ylabel("Temps total d'exécution (s)", fontsize=12)
-ax.set_title("Optimum de Pareto : Précision vs Temps d'entraînement", fontsize=14)
+ax.set_title("Optimum de Pareto : Précision En Fonction de  Temps Total(entrainement+test)", fontsize=14)
 ax.grid(True, linestyle='--', alpha=0.6)
 ax.legend()
 plt.tight_layout()
