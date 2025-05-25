@@ -48,10 +48,9 @@ def sauvegarder_resultats_csv(
     os.makedirs(os.path.dirname(fichier_csv), exist_ok=True)
     fichier_existe = os.path.exists(fichier_csv)
 
-    with open(fichier_csv, "a", newline="") as csvfile:
+    with open(fichier_csv, "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=entetes)
-        if not fichier_existe:
-            writer.writeheader()
+        writer.writeheader()
         writer.writerow(ligne)
 
     print(f"\nRésultats enregistrés dans : {fichier_csv}")

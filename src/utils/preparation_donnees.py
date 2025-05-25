@@ -3,8 +3,8 @@ import pandas as pd
 from PIL import Image
 from sklearn.model_selection import train_test_split
 from utils.extraction_features import zoning_features, extract_4lrp_features
-import csv
-import argparse
+import json
+import time
 
 
 # lit les paths et labels et retourne un tuple
@@ -49,22 +49,33 @@ def process_dataset(dataset, data_size, feature_type):
 def build_dataframe(data, feature_type, n_zones=4):
     n_features = 0
     columns = ['label']
+    rslt =[]
 
     if "flatten" in feature_type:
+        start = time.perf_counter()
         columns += [f'pixel{i}' for i in range(28*28)]
         n_features += 784 # pixel 0 à pixel 783
+        stop = time.perf_counter()
+        rslt.append({"name": "flatten", "time": str(start-stop)})
     if "zoning" in feature_type:
+        start = time.perf_counter()
         columns += [f'zone_{i}' for i in range(n_zones * n_zones)]
         n_features += n_zones * n_zones # zone 0 à zone 15
+        stop = time.perf_counter()
+        rslt.append({"name": "zoning", "time": str(start-stop)})
     if "4lrp" in feature_type:
+        start = time.perf_counter()
         columns += [f'lrp_{i}' for i in range(4 * n_zones * n_zones)] 
         n_features += 4 * n_zones * n_zones
-
+        stop = time.perf_counter()
+        rslt.append({"name": "4lrp", "time": str(start-stop)})
     # Vérification que les longueurs correspondent
     expected_cols = 1 + n_features
     for i, row in enumerate(data):
         if len(row) != expected_cols:
             raise ValueError(f"Ligne {i} a {len(row)} valeurs, attendu {expected_cols}")
+    with open(f"results/temps_entrainement/temps_features.json", "w") as f:
+        json.dump(rslt, f, indent=4)
 
     return pd.DataFrame(data, columns=columns)
 
