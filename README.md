@@ -36,7 +36,7 @@ ocr_eval_25/
 ├── results/
 │   ├── models/              → Stockage des models entrainés
 │   ├── results_algo/        → Stockage des données produites par les models
-│   ├── temps_entrainement/  → Stockage du temps d'entrainement des models
+│   ├── temps_entrainement/  → Stockage du temps d'entrainement des models et du temps d'extraction de features
 │   └── visuels/             → Stockage des rendus visuels des résultats et comparaisons des models
 ├── src/
 │   ├── prep/

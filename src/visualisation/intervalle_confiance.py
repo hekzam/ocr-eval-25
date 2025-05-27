@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 
-def construire_intervalle_confiance(knn_csv, svm_csv, lr_csv, rf_csv):
-    algorithmes = ['KNN', 'Régression Logistique', 'Random Forest', 'SVM']
-    couleurs = ['#1f77b4', '#ff7f0e', '#2ca02c', '#8B4513']  # Bleu, Orange, Vert, Marron
+def construire_intervalle_confiance(knn_csv, lr_csv, rf_csv, output):
+    algorithmes = ['KNN', 'Régression Logistique', 'Random Forest']
+    couleurs = ['#1f77b4', '#ff7f0e', '#2ca02c']  # Bleu, Orange, Vert
 
     # Calculer l'intervalle de confiance
     def intervalle_confiance(donnees, confiance=0.95):
@@ -16,7 +16,7 @@ def construire_intervalle_confiance(knn_csv, svm_csv, lr_csv, rf_csv):
         return moyenne, marge_erreur
 
     # listes
-    datasets = [knn_csv, lr_csv, rf_csv, svm_csv]
+    datasets = [knn_csv, lr_csv, rf_csv]
     temps_train, temps_test = [], []
     err_train, err_test = [], []
 
@@ -34,13 +34,14 @@ def construire_intervalle_confiance(knn_csv, svm_csv, lr_csv, rf_csv):
         err_train.append(err_t)
         err_test.append(err_te)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10), sharey=True)  # Taille augmentée
+    _, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10), sharey=True)  # Taille augmentée
 
     x = np.arange(len(algorithmes))
     largeur = 0.6
 
+
     # Temps d'entraînement
-    bars_train = ax1.bar(x, temps_train, yerr=err_train, capsize=12, color=couleurs,
+    ax1.bar(x, temps_train, yerr=err_train, capsize=12, color=couleurs,
                         edgecolor='black', width=largeur)
     ax1.set_xticks(x)
     ax1.set_xticklabels(algorithmes, rotation=30, fontsize=18)  # Texte plus grand
@@ -48,50 +49,29 @@ def construire_intervalle_confiance(knn_csv, svm_csv, lr_csv, rf_csv):
     ax1.set_title("Temps moyen d'entraînement (± IC 95%)", fontsize=24)
     ax1.grid(axis='y', linestyle='--', alpha=0.7)
     max_train = max([t + e for t, e in zip(temps_train, err_train)]) * 1.3
-    ax1.set_ylim(0, max_train)
-    for i, (val, err) in enumerate(zip(temps_train, err_train)):
-        txt = f"{val:.2f} ± {err:.2f}" if err > 0 else f"{val:.2f}"
-        ax1.text(i, val + max_train * 0.03, txt, ha='center', fontsize=16, fontweight='bold')
+    
+
 
     # Temps de test
-    bars_test = ax2.bar(x, temps_test, yerr=err_test, capsize=12, color=couleurs,
+    ax2.bar(x, temps_test, yerr=err_test, capsize=12, color=couleurs,
                         edgecolor='black', width=largeur)
     ax2.set_xticks(x)
     ax2.set_xticklabels(algorithmes, rotation=30, fontsize=18)
     ax2.set_title("Temps moyen de test (± IC 95%)", fontsize=24)
     ax2.grid(axis='y', linestyle='--', alpha=0.7)
     max_test = max([t + e for t, e in zip(temps_test, err_test)]) * 1.3
-    ax2.set_ylim(0, max_test)
+    
+    limite_y = max(max_train, max_test)
+    ax2.set_ylim(0, limite_y)
     for i, (val, err) in enumerate(zip(temps_test, err_test)):
         txt = f"{val:.2f} ± {err:.2f}" if err > 0 else f"{val:.2f}"
         ax2.text(i, val + max_test * 0.03, txt, ha='center', fontsize=16, fontweight='bold')
+    ax1.set_ylim(0, limite_y)
+    for i, (val, err) in enumerate(zip(temps_train, err_train)):
+        txt = f"{val:.2f} ± {err:.2f}" if err > 0 else f"{val:.2f}"
+        ax1.text(i, val + max_train * 0.03, txt, ha='center', fontsize=16, fontweight='bold')
 
     plt.tight_layout()
+    plt.savefig(output+'\intervalle_confiance.png', dpi=300)
     plt.show()
-
-    # --- Calcul des performances ---
-    precision = [df['precision'].mean() for df in datasets]
-    accuracy = [df['accuracy'].mean() for df in datasets]
-    f1_score = [df['f1_score'].mean() for df in datasets]
-    recall = [df['recall'].mean() for df in datasets]
-    balanced = [df['balanced_accuracy'].mean() for df in datasets]
-    temps_total = [round(t + ts, 2) for t, ts in zip(temps_train, temps_test)]
-
-    # --- Résumé  ---
-    resultats = pd.DataFrame({
-        'Algorithme': algorithmes,
-        'Tps Entrain (s)': [round(t, 2) for t in temps_train],
-        'IC Entrain (±s)': [round(e, 2) for e in err_train],
-        'Tps Test (s)': [round(t, 2) for t in temps_test],
-        'IC Test (±s)': [round(e, 2) for e in err_test],
-        'Précision': [round(p, 4) for p in precision],
-        'Accuracy': [round(a, 4) for a in accuracy],
-        'F1-score': [round(f1, 4) for f1 in f1_score],
-        'Recall': [round(r, 4) for r in recall],
-        'Balanced Acc.': [round(b, 4) for b in balanced],
-        'Tps Total (s)': temps_total
-    })
-
-
-    print("\n RÉCAPITULATION DES PERFORMANCES (IC = Intervalle de Confiance à 95%) :\n")
-    print(resultats.to_string(index=False, float_format="{:.4f}".format))
+    

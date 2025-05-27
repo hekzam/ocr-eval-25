@@ -1,0 +1,34 @@
+```
+
+# DOCUMENTATION : Fichiers resultats_<algorithme>.csv
+
+Ces fichiers stockent les résultats d'évaluation des différents modèles d'apprentissage automatique utilisés pour la reconnaissance de chiffres manuscrits. Chaque ligne représente une exécution du modèle.
+
+# Nom des fichiers
+- resultats_knn.csv
+- resultats_svm.csv
+- resultats_random_forest.csv
+- resultats_logistic_regression.csv
+
+# Colonnes communes
+
+| Colonne              |  Description                                                                    |
+|----------------------|---------------------------------------------------------------------------------|
+| algorithme           | Nom de l'algorithme utilisé (ex. : knn, svm, random forest, logistic regression)|
+| n_train              | Nombre d'échantillons dans les données d'entraînement                           |
+| n_test               | Nombre d'échantillons dans les données de test                                  |
+| temps_entrainement   | Durée (en secondes) de l'entraînement du modèle                                 |
+| temps_test           | Durée (en secondes) de la prédiction sur l'ensemble de test                     |
+| accuracy             | Précision globale : proportion d’étiquettes correctement prédites               |
+| precision            | Précision moyenne pondérée sur toutes les classes                               |
+| recall               | Rappel moyen pondéré : capacité à identifier correctement les vraies classes    |
+| f1_score             | Moyenne harmonique entre précision et rappel                                    |
+| balanced_accuracy    | Moyenne des précisions par classe (utile si classes déséquilibrées)             |
+
+# Remarques :
+- Ces résultats permettent de comparer les modèles selon la performance et le temps d'exécution.
+- Les fichiers sont utiles pour la visualisation, la comparaison ou l'analyse statistique.
+
+# Exemple d'utilisation :
+Ces fichiers peuvent être utilisés pour tracer des graphiques afin de choisir le meilleur modèle selon les besoins (performance, rapidité, etc.).
+ ```

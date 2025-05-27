@@ -226,17 +226,15 @@ def main():
 
         if (args.m_visuals_construction!=None and 
              "knn" in pre_args.test and 
-             "svm" in pre_args.test and 
              "rf" in pre_args.test and 
              "lr" in pre_args.test ):
             #TODO appeler intervalle et optimum args.m_confusion_matrix
             knn_csv = args.m_custom_output + "/resultats_knn.csv"
-            svm_csv = args.m_custom_output + "/resultats_svm.csv"
             lr_csv = args.m_custom_output + "/resultats_random_forest.csv"
             rf_csv = args.m_custom_output + "/resultats_logistic_regression.csv"
-            int_conf.construire_intervalle_confiance(pd.read_csv(knn_csv), pd.read_csv(svm_csv),
-                                                    pd.read_csv(lr_csv), pd.read_csv(rf_csv))
-            optimum.construire_optimum(knn_csv, svm_csv, lr_csv, rf_csv)
+            int_conf.construire_intervalle_confiance(pd.read_csv(knn_csv),
+                                                    pd.read_csv(lr_csv), pd.read_csv(rf_csv), args.m_visuals_construction)
+            optimum.construire_optimum(knn_csv, lr_csv, rf_csv, args.m_visuals_construction)
 
 
 

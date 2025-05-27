@@ -1,2 +1,2 @@
 algorithme,n_train,n_test,temps_entrainement,temps_test,accuracy,precision,recall,f1_score,balanced_accuracy
-knn,52960,13239,3.3182,7.2254,0.9592,0.9603,0.9587,0.9591,0.9587
+knn,52960,13239,2.396,72.9409,0.9591,0.9603,0.9586,0.9591,0.9586

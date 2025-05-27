@@ -1,2 +1,2 @@
 algorithme,n_train,n_test,temps_entrainement,temps_test,accuracy,precision,recall,f1_score,balanced_accuracy
-svm,52960,13239,44.2031,30.884,0.9271,0.9277,0.9272,0.9268,0.9272
+svm,52960,13239,146.4468,65.2838,0.9274,0.9279,0.9275,0.9271,0.9275

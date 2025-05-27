@@ -1,2 +1,2 @@
 algorithme,n_train,n_test,temps_entrainement,temps_test,accuracy,precision,recall,f1_score,balanced_accuracy
-logistic regression,52960,13239,14.6123,0.1078,0.8958,0.8951,0.8949,0.8949,0.8949
+logistic regression,52960,13239,66.8967,0.1458,0.8958,0.895,0.8949,0.8949,0.8949
