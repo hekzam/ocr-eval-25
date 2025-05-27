@@ -205,7 +205,7 @@ def main():
                 metriques=metriques,
                 temps_train=temps_train,
                 temps_test=temps,
-                n_train=len(y_train),
+                n_train=10000 if nom_algo == "svm" else len(y_train),
                 n_test=len(x_test), 
                 dossier_fichier= args.m_custom_output
             )
